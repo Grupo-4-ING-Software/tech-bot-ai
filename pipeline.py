@@ -1,10 +1,14 @@
 import json
 import openai
-from openai import OpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
 from config import OPENAI_API_KEY
-from prompts import PROMPTS
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+llm = ChatOpenAI(
+    model="gpt-3.5-turbo",
+    temperature=0,
+    openai_api_key=OPENAI_API_KEY
+)
 
 def is_relevant_input(career: str) -> bool:
     """Verifica si la entrada del usuario es relevante para carreras tecnológicas."""
@@ -23,18 +27,12 @@ def generate_learning_path(career: str) -> dict:
         }
 
     try:
-        prompt = f"Enumera los conceptos fundamentales que un {career} debe aprender, y proporciona una breve descripción de cada uno."
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
+        prompt_template = ChatPromptTemplate.from_template(
+            f"Enumera los conceptos fundamentales que un {career} debe aprender, y proporciona una breve descripción de cada uno."
         )
+        response = llm.invoke(prompt_template.format())
 
-        raw_output = response.choices[0].message.content.strip()
+        raw_output = response.content.strip()
         lines = raw_output.split("\n")
         nodes = []
 
@@ -48,9 +46,9 @@ def generate_learning_path(career: str) -> dict:
 
         roadmap_json = {
             "roadmap": {
-                "tip": "Make sure to build as many projects as possible for each node of the roadmap.",
+                "tip": "Asegúrate de crear tantos proyectos como sea posible para cada nodo de la hoja de ruta.",
                 "nodes": nodes,
-                "importantNote": "You should be able to find an intern or Junior Frontend Developer job after learning these key concepts. Start applying for jobs and keep learning."
+                "importantNote": "Deberías poder encontrar un trabajo como pasante o desarrollador frontend júnior después de aprender estos conceptos clave. Comienza a postularte a trabajos y sigue aprendiendo."
             }
         }
 
