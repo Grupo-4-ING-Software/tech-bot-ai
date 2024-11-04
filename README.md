@@ -63,5 +63,3 @@ Documentar el proceso de implementación de la AI en tu proyecto de chatbot, ase
    - Documentación oficial de LangChain.
    - Referencias a guías de FastAPI y OpenAI.
 
-Esta documentación garantiza que cualquier desarrollador pueda comprender y trabajar con la implementación de AI de manera efectiva.
-
